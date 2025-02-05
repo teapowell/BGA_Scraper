@@ -4,6 +4,7 @@ A Python script for scraping Regicide game statistics from Board Game Arena, spe
 
 ## Features
 
+- Launches Google Chrome in debug mode from python script
 - Scrapes table numbers from game statistics page
 - Collects detailed game settings for each table:
     - Hand size
@@ -33,17 +34,6 @@ pip install -r requirements.txt
 1. Install Chrome browser if not already installed
 2. Download ChromeDriver that matches your Chrome version
 3. Copy `config.example.py` to `config.py` and update with your settings
-4. Start Chrome with remote debugging enabled:
-
-   ```bash
-   /path/to/your/chrome.exe --remote-debugging-port=9222
-   ```
-
-    1. MacOS:
-
-    ```bash
-    /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222
-   ```
 
 ## Configuration
 
@@ -55,9 +45,7 @@ The project uses a configuration file to manage personal settings:
    cp config.example.py config.py
    ```
 
-2. Update the values in `config.py`:
-   - `CHROMEDRIVER_PATH`: Path to your ChromeDriver executable
-   - `TARGET_URL`: Your BGA stats page URL
+2. Update the values in `config.py`
 
 Note: `config.py` is gitignored to protect your personal information. Never commit this file to version control.
 
@@ -71,9 +59,12 @@ Note: `config.py` is gitignored to protect your personal information. Never comm
    ```
 
 3. The script will:
+
+   - Launch a Chrome instance in debug mode
    - Collect table numbers from the stats page
    - Visit each table to collect game details
    - Save results to `regicide_raw_data.csv`
+   - Close Chrome
 
 ## Output Format
 
@@ -90,7 +81,7 @@ The script generates a CSV file with the following columns:
 - Normal Mode:
     - Collects actual values for all game settings
     - Determines win/loss based on enemies defeated count
-  
+
 - Disabled Mode (gameoption_100 = 'Disabled'):
     - Sets hand_size = 0
     - Sets health_modifier = 0
