@@ -42,7 +42,13 @@ pip install selenium
 4. Start Chrome with remote debugging enabled:
 
    ```bash
-   chrome.exe --remote-debugging-port=9222
+   /path/to/your/chrome.exe --remote-debugging-port=9222
+   ```
+
+    1. MacOS:
+
+    ```bash
+    /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222
    ```
 
 ## Configuration
