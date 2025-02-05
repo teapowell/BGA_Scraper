@@ -55,6 +55,7 @@ def scrape_table_details(driver, table_number):
         print(f"Error scraping table {table_number}: {e}")
         return None
 
+
 def scrape_table_numbers(target_url, chromedriver_path):
     print("Starting table number scraping process...")
     
@@ -68,24 +69,35 @@ def scrape_table_numbers(target_url, chromedriver_path):
         print(f"Navigating to target URL: {target_url}\n")
         driver.get(target_url)
         table_numbers = set()
-        max_clicks = 7
-        clicks = 0
 
-        while clicks < max_clicks:
-            table_number_elements = driver.find_elements(By.CSS_SELECTOR, 'a.table_name.bga-link.smalltext')
+        while True:
+            # Wait for table elements to be present
+            table_number_elements = WebDriverWait(driver, 10).until(
+                EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'a.table_name.bga-link.smalltext'))
+            )
+            
             current_tables = {elem.text.strip('#') for elem in table_number_elements}
             
-            print(f"Iteration {clicks + 1}: Found {len(current_tables)} new table numbers")
-            table_numbers.update(current_tables)
+            # First iteration - always add tables
+            if not table_numbers:
+                table_numbers.update(current_tables)
+                print(f"Initial load: Found {len(current_tables)} table numbers")
+            else:
+                # Subsequent iterations
+                new_tables = current_tables - table_numbers
+                if not new_tables:
+                    print("No new tables found. Stopping scraping.")
+                    break
+                
+                table_numbers.update(new_tables)
+                print(f"Found {len(new_tables)} new table numbers. Total tables found: {len(table_numbers)}")
 
             try:
                 see_more_button = WebDriverWait(driver, 10).until(
                     EC.element_to_be_clickable((By.ID, "see_more_tables"))
                 )
                 see_more_button.click()
-                clicks += 1
                 time.sleep(2)
-                print(f"    Clicked 'See more' button. Total unique tables: {len(table_numbers)}")
             except Exception:
                 print("No more 'See more' button available or error occurred.")
                 break
