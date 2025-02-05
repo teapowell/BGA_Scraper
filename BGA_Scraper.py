@@ -7,6 +7,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+
 try:
     from config import CHROMEDRIVER_PATH, TARGET_URL
 except ImportError:
@@ -56,6 +57,7 @@ def scrape_table_details(driver, table_number):
 
 def scrape_table_numbers(target_url, chromedriver_path):
     print("Starting table number scraping process...")
+    
     chrome_options = Options()
     chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
 
@@ -89,7 +91,7 @@ def scrape_table_numbers(target_url, chromedriver_path):
                 break
 
         print(f"\nScraping complete. Total unique table numbers collected: {len(table_numbers)}")
-        return sorted(table_numbers)
+        return table_numbers
 
     finally:
         driver.quit()
