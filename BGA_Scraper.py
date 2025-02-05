@@ -1,3 +1,5 @@
+import time
+import csv
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
@@ -13,8 +15,44 @@ except ImportError:
     exit(1)
 
 def scrape_table_details(driver, table_number):
-    # Rest of the function remains the same
-    pass
+    try:
+        print(f"Navigating to table number: {table_number}")
+        driver.get(f"https://boardgamearena.com/table?table={table_number}")
+        time.sleep(2)
+
+        # Check if game option 100 is disabled
+        game_option_100 = driver.find_element(By.ID, 'gameoption_100_displayed_value').text
+        enemies_defeated = driver.find_element(By.CSS_SELECTOR, '#table_stats > div:nth-child(4) > div.row-value').text.strip()
+        
+        # Determine game outcome
+        game_won = enemies_defeated == '12'
+        
+        print(f"Table {table_number}: Enemies Defeated = '{enemies_defeated}', Game Won = {game_won}")
+
+        if game_option_100 == 'Disabled':
+            details = {
+                'table_number': table_number,
+                'hand_size': 0,
+                'health_modifier': 0,
+                'attack_modifier': 0,
+                'difficulty': 1,
+                'game_won': int(game_won)
+            }
+            print(f"Table {table_number}: Disabled mode - default values")
+        else:
+            details = {
+                'table_number': table_number,
+                'hand_size': driver.find_element(By.ID, 'gameoption_101_displayed_value').text,
+                'health_modifier': driver.find_element(By.ID, 'gameoption_103_displayed_value').text,
+                'attack_modifier': driver.find_element(By.ID, 'gameoption_104_displayed_value').text,
+                'difficulty': driver.find_element(By.CSS_SELECTOR, '#table_stats > div:nth-child(5) > div.row-value').text,
+                'game_won': int(game_won)
+            }
+            print(f"Table {table_number}: Collecting full details")
+        return details
+    except Exception as e:
+        print(f"Error scraping table {table_number}: {e}")
+        return None
 
 def scrape_table_numbers(target_url, chromedriver_path):
     print("Starting table number scraping process...")
