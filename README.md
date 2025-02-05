@@ -25,20 +25,14 @@ A Python script for scraping Regicide game statistics from Board Game Arena, spe
 ## Required Python Packages
 
 ```bash
-pip install selenium
+pip install -r requirements.txt
 ```
 
 ## Setup
 
 1. Install Chrome browser if not already installed
 2. Download ChromeDriver that matches your Chrome version
-3. Copy `config.example.py` to `config.py` and update with your settings:
-
-   ```python
-   CHROMEDRIVER_PATH = '/path/to/your/chromedriver'
-   TARGET_URL = "https://boardgamearena.com/gamestats?player=YOUR_PLAYER_ID&game_id=1606&finished=1"
-   ```
-
+3. Copy `config.example.py` to `config.py` and update with your settings
 4. Start Chrome with remote debugging enabled:
 
    ```bash
