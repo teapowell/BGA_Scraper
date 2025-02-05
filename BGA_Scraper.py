@@ -103,7 +103,7 @@ def scrape_table_numbers(target_url, chromedriver_path):
                 break
 
         print(f"\nScraping complete. Total unique table numbers collected: {len(table_numbers)}")
-        return table_numbers
+        return sorted(table_numbers)
 
     finally:
         driver.quit()
