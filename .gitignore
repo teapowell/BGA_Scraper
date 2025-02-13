@@ -1,7 +1,8 @@
 # Project specific
 config.py
 *.csv
-chromedriver-mac-arm64/
+chromedriver-mac-arm64
+chrome-debug-profile
 
 # IDE
 .idea/
