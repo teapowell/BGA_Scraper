@@ -1,5 +1,4 @@
 import subprocess
-import os
 import psutil
 import time
 import csv
@@ -17,27 +16,40 @@ except ImportError:
     print("You can copy config.example.py to config.py and update the values")
     exit(1)
 
-
 def launch_chrome_debug_mode():
-    # Find and kill any existing Chrome debug sessions
+    print("Launching Chrome in debug mode...")
+    
+    # Kill existing Chrome debug sessions
     for proc in psutil.process_iter(['name', 'cmdline']):
-        if proc.info['name'] == 'Google Chrome':
-            for cmd in proc.info['cmdline']:
-                if '--remote-debugging-port=9222' in cmd:
+        try:
+            if proc.info['name'] and 'Chrome' in proc.info['name']:
+                cmdline = proc.info.get('cmdline', [])
+                if any('--remote-debugging-port=9222' in cmd for cmd in cmdline):
+                    print("Terminating existing Chrome debug session...")
                     proc.terminate()
-                    time.sleep(2)
+                    proc.wait(timeout=5)
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.TimeoutExpired):
+            continue
 
-    # Launch Chrome in debug mode
+    time.sleep(2)  # Wait for processes to clean up
+
+    # Launch new Chrome instance in debug mode
     debug_cmd = [
-        'open', 
-        '-a', 'Google Chrome', 
-        '--args', 
+        CHROME_PATH,
         '--remote-debugging-port=9222',
+        '--no-first-run',
+        '--no-default-browser-check'
+        # '--user-data-dir=./chrome-debug-profile'
     ]
-    # subprocess.Popen(debug_cmd)
-    with open('chrome_debug.log', 'w') as log_file:
-        subprocess.Popen(debug_cmd, stdout=log_file, stderr=log_file)
-    time.sleep(3)  # Give Chrome time to start
+    
+    try:
+        with open('chrome_debug.log', 'w') as log_file:
+            process = subprocess.Popen(debug_cmd, stdout=log_file, stderr=log_file)
+            time.sleep(5)  # Give Chrome more time to start
+            return process
+    except subprocess.SubprocessError as e:
+        print(f"Failed to launch Chrome: {e}")
+        raise
 
 def close_chrome_debug_mode():
     # Close Chrome debug session
