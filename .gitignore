@@ -3,6 +3,7 @@ config.py
 *.csv
 chromedriver-mac-arm64
 chrome-debug-profile
+test.py
 
 # IDE
 .idea/
